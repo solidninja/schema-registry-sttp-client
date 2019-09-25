@@ -21,7 +21,7 @@ object SchemaCompatibilityLevel extends Enumeration {
   val BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE, FULL, FULL_TRANSITIVE, NONE = Value
 }
 
-sealed trait SchemaRegistryError
+sealed abstract class SchemaRegistryError extends RuntimeException
 
 object SchemaRegistryError {
 
