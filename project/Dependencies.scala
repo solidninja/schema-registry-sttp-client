@@ -15,12 +15,13 @@ object Dependencies {
 
   val circe = Seq(
     "io.circe" %% "circe-generic" % Versions.circe,
+    "io.circe" %% "circe-generic-extras" % Versions.circe,
     "io.circe" %% "circe-jawn" % Versions.circe,
     "io.circe" %% "circe-literal" % Versions.circe
   )
 
   val scalatest = Seq(
-    "org.scalatest" %% "scalatest" % Versions.scalatest % Test
+    "org.scalatest" %% "scalatest" % Versions.scalatest % "it,test"
   )
 
   val sttp = Seq(
@@ -29,7 +30,7 @@ object Dependencies {
   )
 
   val testSttp = Seq(
-    "com.softwaremill.sttp" %% "async-http-client-backend-cats" % Versions.sttp % Test
+    "com.softwaremill.sttp" %% "async-http-client-backend-cats" % Versions.sttp % "it,test"
   )
 
   val runtimeLogging = Seq(

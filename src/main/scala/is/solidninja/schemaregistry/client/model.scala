@@ -13,7 +13,12 @@ import org.apache.avro.{Schema => AvroSchema}
 
 final case class Schema(schema: AvroSchema)
 
-final case class VersionedSchema(schema: AvroSchema, subject: String, version: Int)
+/**
+  * Unique identifier of the schema in the registry
+  */
+final case class SchemaId(id: Int) extends AnyVal
+
+final case class VersionedSchema(id: SchemaId, subject: String, version: Int, schema: AvroSchema)
 
 // Not using enumeratum to avoid extra dependency
 object SchemaCompatibilityLevel extends Enumeration {
@@ -30,7 +35,7 @@ object SchemaRegistryError {
     case InvalidAvroSchema                   => "Avro schema is not valid"
     case InvalidSchemaVersion                => "Avro schema version is not valid"
     case SchemaDeserializationError(message) => show"Schema deserialization failed with message: $message"
-    case SchemaNotFound(Left(id))            => show"Schema with id=$id not found"
+    case SchemaNotFound(Left(SchemaId(id)))  => show"Schema with id=$id not found"
     case SchemaNotFound(Right((subject, versionOpt))) =>
       show"Schema with subject=$subject, version=${versionOpt} not found"
     case UnknownError(status, message) => show"Unknown error code=$status, message=$message}"
@@ -42,6 +47,6 @@ case object IncompatibleAvroSchema extends SchemaRegistryError
 case object InvalidAvroSchema extends SchemaRegistryError
 case object InvalidSchemaVersion extends SchemaRegistryError
 
-final case class SchemaNotFound(id: Either[Int, (String, Option[Int])]) extends SchemaRegistryError
+final case class SchemaNotFound(id: Either[SchemaId, (String, Option[Int])]) extends SchemaRegistryError
 final case class SchemaDeserializationError(message: String) extends SchemaRegistryError
 final case class UnknownError(httpStatus: StatusCode, message: String) extends SchemaRegistryError

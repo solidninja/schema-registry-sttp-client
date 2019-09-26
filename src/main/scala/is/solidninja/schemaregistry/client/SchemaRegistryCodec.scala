@@ -7,6 +7,7 @@ import scala.util.Try
 
 import io.circe._
 import io.circe.generic.semiauto._
+import io.circe.generic.extras.semiauto.deriveUnwrappedCodec
 import org.apache.avro.{Schema => AvroSchema}
 
 final case class SchemaIdContainer private[client] (id: Int)
@@ -26,6 +27,7 @@ private[schemaregistry] trait SchemaRegistryCodec {
   )
 
   // Model types
+  implicit val schemaIdCodec: Codec[SchemaId] = deriveUnwrappedCodec
   implicit val schemaCodec: Codec[Schema] = deriveCodec
   implicit val schemaCompatibilityLevelCodec: Codec[SchemaCompatibilityLevel.SchemaCompatibilityLevel] =
     Codec.codecForEnumeration(SchemaCompatibilityLevel)

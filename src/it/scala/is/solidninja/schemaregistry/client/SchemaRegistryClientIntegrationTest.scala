@@ -53,7 +53,7 @@ class SchemaRegistryClientIntegrationTest extends FreeSpec with Matchers with Sc
 
     inside(res) {
       case Right((schemaId, gotSchema)) =>
-        schemaId should be >= 1
+        schemaId.id should be >= 1
         gotSchema should equal (schema)
     }
   }

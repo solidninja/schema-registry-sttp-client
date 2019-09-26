@@ -37,7 +37,8 @@ object build {
         url("https://gitlab.com/solidninja/schema-registry-sttp-client"),
         "scm:git:https://gitlab.com/solidninja/schema-registry-sttp-client.git",
         Some(s"scm:git:git@gitlab.com:solidninja/schema-registry-sttp-client.git")
-      ))
+      )
+    )
   )
 
   val commonSettings = mavenCentralSettings ++ Seq(

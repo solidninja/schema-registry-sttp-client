@@ -8,7 +8,7 @@ import cats.syntax.functor._
 import com.softwaremill.sttp.circe._
 import com.softwaremill.sttp.{SttpBackend, Response => SttpResponse, _}
 import is.solidninja.schemaregistry.client.SchemaCompatibilityLevel.SchemaCompatibilityLevel
-import is.solidninja.schemaregistry.client.SchemaRegistryClient.{ResponseF, SchemaId, SchemaVersion, SubjectName}
+import is.solidninja.schemaregistry.client.SchemaRegistryClient.{ResponseF, SchemaVersion, SubjectName}
 
 /**
   * Client for the Confluent Schema Registry
@@ -82,7 +82,6 @@ object SchemaRegistryClient {
   type Response[T] = Either[SchemaRegistryError, T]
   type ResponseF[F[_], T] = F[Response[T]]
 
-  type SchemaId = Int
   type SchemaVersion = Int
   type SubjectName = String
 
@@ -133,7 +132,7 @@ object SchemaRegistryClient {
 
       override def get(id: SchemaId): ResponseF[F, Schema] =
         sttp
-          .get(uri"$host/schemas/ids/$id")
+          .get(uri"$host/schemas/ids/${id.id}")
           .response(asJson[Schema])
           .send()
           .map { r =>
@@ -189,7 +188,7 @@ object SchemaRegistryClient {
               case _                               => convertResponse(r)
             }
           }
-          .map(_.map(_.id))
+          .map(_.map(idc => SchemaId(idc.id)))
 
       override def updateCompatibilityLevel(
           level: SchemaCompatibilityLevel,
