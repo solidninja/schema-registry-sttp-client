@@ -1,0 +1,56 @@
+image: "hseeberger/scala-sbt:11.0.4_1.3.2_2.13.1"
+
+variables:
+  SBT_OPTS: "-Dsbt.global.base=sbt-cache/sbtboot -Dsbt.boot.directory=sbt-cache/boot -Dsbt.ivy.home=sbt-cache/ivy -Dsbt.coursier.home=sbt-cache/coursier"
+  COURSIER_CACHE: sbt-cache/coursier
+  # FIXME these IP addresses are hard-coded based on observations, need https://gitlab.com/gitlab-org/gitlab-runner/issues/1042
+  ZOOKEEPER_CLIENT_PORT: 2181
+  ZOOKEEPER_TICK_TIME: 2000
+  KAFKA_BROKER_ID: 1
+  KAFKA_ZOOKEEPER_CONNECT: '172.17.0.3:2181'
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.17.0.4:29092,PLAINTEXT_HOST://localhost:9092
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+  KAFKA_OPTS: "-Dzookeeper.sasl.client.canonicalize.hostname=false"
+  SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: '172.17.0.3:2181'
+  # These env vars are actually used in the test
+  SCHEMA_REGISTRY_HOST: "172.17.0.5:8081"
+
+# FIXME: investigate better tools than sleep to wait for container start-up
+services:
+  - name: confluentinc/cp-zookeeper:5.3.1
+    alias: zookeeper
+    command:
+      - /bin/sh
+      - "-c"
+      - "echo zookeeper && hostname -A && cat /etc/hosts && /etc/confluent/docker/run"
+  - name: confluentinc/cp-kafka:5.3.1-1
+    alias: kafka
+    command:
+      - /bin/sh
+      - "-c"
+      - "echo kafka && hostname -A && cat /etc/hosts && ping -c 1 172.17.0.3 && sleep 5 && /etc/confluent/docker/run"
+  - name: confluentinc/cp-schema-registry:5.3.1
+    alias: schema-registry
+    command:
+      - /bin/sh
+      - "-c"
+      - "echo schema-registry && hostname -A && cat /etc/hosts && ping -c 1 172.17.0.4 && sleep 10 && /etc/confluent/docker/run"
+
+cache:
+  key: "$CI_BUILD_REF_NAME"
+  untracked: true
+  paths:
+    - "sbt-cache/sbtboot"
+    - "sbt-cache/boot"
+    - "sbt-cache/ivy/cache"
+    - "sbt-cache/coursier"
+
+stages:
+  - test
+
+test:
+  script:
+    - sbt scalafmtSbtCheck scalafmtCheck test:scalafmtCheck it:scalafmtCheck +test +it:test

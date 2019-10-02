@@ -1,4 +1,3 @@
-# Required services for running ride-capacity locally
 version: '3'
 services:
   zookeeper:

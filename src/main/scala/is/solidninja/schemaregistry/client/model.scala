@@ -18,6 +18,9 @@ final case class Schema(schema: AvroSchema)
   */
 final case class SchemaId(id: Int) extends AnyVal
 
+/**
+  * Schema with subject and version
+  */
 final case class VersionedSchema(id: SchemaId, subject: String, version: Int, schema: AvroSchema)
 
 // Not using enumeratum to avoid extra dependency

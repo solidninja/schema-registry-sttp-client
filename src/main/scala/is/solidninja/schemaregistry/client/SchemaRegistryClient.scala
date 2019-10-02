@@ -27,6 +27,11 @@ trait SchemaRegistryClient[F[_]] {
   def delete(subject: SubjectName): ResponseF[F, List[SchemaVersion]]
 
   /**
+    * Remove all schema versions (if the subject exists)
+    */
+  def deleteIfExists(subject: SubjectName): ResponseF[F, Option[List[SchemaVersion]]]
+
+  /**
     * Remove a specific schema version identified by the given subject
     */
   def deleteVersion(subject: SubjectName, version: Option[SchemaVersion]): ResponseF[F, Int]
@@ -109,6 +114,12 @@ object SchemaRegistryClient {
               case _                    => convertResponse(r)
             }
           }
+
+      override def deleteIfExists(subject: SubjectName): ResponseF[F, Option[List[SchemaVersion]]] =
+        Functor[F].map(delete(subject)) {
+          case Left(_: SchemaNotFound) => Right(None)
+          case res                     => res.map(Some(_))
+        }
 
       override def deleteVersion(subject: SubjectName, version: Option[SchemaVersion]): ResponseF[F, SchemaVersion] =
         sttp

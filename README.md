@@ -1,6 +1,7 @@
 # schema-registry-sttp-client
 
-Client for [Confluent Schema Registry][schema-registry] using sttp
+Client for [Confluent Schema Registry][schema-registry] using sttp.
+
 ## License
 
 This project is licensed as [MIT][mit-license]. 
