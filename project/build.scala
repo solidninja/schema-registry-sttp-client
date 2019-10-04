@@ -43,7 +43,7 @@ object build {
 
   val commonSettings = mavenCentralSettings ++ Seq(
     organization := "is.solidninja.schemaregistry",
-    version := "0.1.0",
+    version := "0.1.1",
     scalaVersion := "2.13.1",
     crossScalaVersions := Seq("2.12.10", "2.13.1"),
     javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
