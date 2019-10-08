@@ -5,7 +5,7 @@ object Dependencies {
   object Versions {
     val avro = "1.9.1"
     val circe = "0.12.1"
-    val sttp = "1.6.7"
+    val sttp = "1.6.8"
     val scalatest = "3.0.8"
   }
 
