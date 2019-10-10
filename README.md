@@ -4,7 +4,7 @@ Client for [Confluent Schema Registry][schema-registry] using [sttp].
 
 To use, add the following to `build.sbt`:
 
-`libraryDependencies += "is.solidninja.schemaregistry" %% "sttp-client" % "0.1.1"`
+`libraryDependencies += "is.solidninja.schemaregistry" %% "sttp-client" % "0.1.2"`
 
 ## License
 
