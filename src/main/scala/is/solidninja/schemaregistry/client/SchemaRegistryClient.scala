@@ -110,7 +110,7 @@ object SchemaRegistryClient {
           .send()
           .map { r =>
             r.code match {
-              case StatusCodes.NotFound => Left(SchemaNotFound(Right((subject, None))))
+              case StatusCodes.NotFound => Left(SchemaNotFound(subject))
               case _                    => convertResponse(r)
             }
           }
@@ -148,7 +148,7 @@ object SchemaRegistryClient {
           .send()
           .map { r =>
             r.code match {
-              case StatusCodes.NotFound => Left(SchemaNotFound(Left(id)))
+              case StatusCodes.NotFound => Left(SchemaNotFound(id))
               case _                    => convertResponse(r)
             }
           }
@@ -219,7 +219,7 @@ object SchemaRegistryClient {
       r: SttpResponse[Either[DeserializationError[io.circe.Error], A]]
   ): Either[SchemaRegistryError, A] =
     r.code match {
-      case StatusCodes.NotFound            => Left(SchemaNotFound(Right((subject, version))))
+      case StatusCodes.NotFound            => Left(SchemaNotFound(subject, version))
       case StatusCodes.UnprocessableEntity => Left(InvalidSchemaVersion)
       case _                               => convertResponse(r)
     }

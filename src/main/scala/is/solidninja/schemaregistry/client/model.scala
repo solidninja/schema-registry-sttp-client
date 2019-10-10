@@ -5,11 +5,10 @@ package client
 
 import cats.Show
 import cats.instances.int._
-import cats.instances.option._
 import cats.instances.string._
 import cats.syntax.show._
 import com.softwaremill.sttp.StatusCode
-import org.apache.avro.{Schema => AvroSchema}
+import org.apache.avro.{SchemaNormalization, Schema => AvroSchema}
 
 final case class Schema(schema: AvroSchema)
 
@@ -29,27 +28,41 @@ object SchemaCompatibilityLevel extends Enumeration {
   val BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE, FULL, FULL_TRANSITIVE, NONE = Value
 }
 
-sealed abstract class SchemaRegistryError extends RuntimeException
+sealed abstract class SchemaRegistryError(message: String) extends RuntimeException(message)
 
 object SchemaRegistryError {
-
-  implicit val showForSchemaRegistryError: Show[SchemaRegistryError] = Show.show {
-    case IncompatibleAvroSchema              => "Avro schema is incompatible with previous version"
-    case InvalidAvroSchema                   => "Avro schema is not valid"
-    case InvalidSchemaVersion                => "Avro schema version is not valid"
-    case SchemaDeserializationError(message) => show"Schema deserialization failed with message: $message"
-    case SchemaNotFound(Left(SchemaId(id)))  => show"Schema with id=$id not found"
-    case SchemaNotFound(Right((subject, versionOpt))) =>
-      show"Schema with subject=$subject, version=${versionOpt} not found"
-    case UnknownError(status, message) => show"Unknown error code=$status, message=$message}"
-  }
+  implicit val showForSchemaRegistryError: Show[SchemaRegistryError] = Show.show(_.getMessage)
 }
 
-case object IncompatibleAvroSchema extends SchemaRegistryError
+case object IncompatibleAvroSchema extends SchemaRegistryError("Avro schema is incompatible with previous version")
+case object InvalidAvroSchema extends SchemaRegistryError("Avro schema is not valid")
+case object InvalidSchemaVersion extends SchemaRegistryError("Avro schema version is not valid")
 
-case object InvalidAvroSchema extends SchemaRegistryError
-case object InvalidSchemaVersion extends SchemaRegistryError
+final case class SchemaNotFound private[client] (
+    message: String,
+    id: Either[SchemaId, (String, Option[Int], Option[Long])]
+) extends SchemaRegistryError(message) {
+  def schemaId: Option[SchemaId] = id.left.toOption
+}
 
-final case class SchemaNotFound(id: Either[SchemaId, (String, Option[Int])]) extends SchemaRegistryError
-final case class SchemaDeserializationError(message: String) extends SchemaRegistryError
-final case class UnknownError(httpStatus: StatusCode, message: String) extends SchemaRegistryError
+object SchemaNotFound {
+  def apply(id: Either[SchemaId, (String, Option[Int], Option[Long])]): SchemaNotFound = {
+    val message = id match {
+      case Left(SchemaId(id)) => show"Schema with id=$id not found"
+      case Right((subject, versionOpt, fingerprintOpt)) =>
+        show"Schema with subject=$subject, version=${versionOpt.fold("latest")(_.toString)}, fingerprint=${fingerprintOpt
+          .fold("?")(_.toString)} not found"
+    }
+    new SchemaNotFound(message, id)
+  }
+  def apply(id: SchemaId): SchemaNotFound = apply(Left(id))
+  def apply(name: String, lookupSchema: AvroSchema): SchemaNotFound =
+    apply(name, version = None, Some(SchemaNormalization.parsingFingerprint64(lookupSchema)))
+  def apply(name: String, version: Option[Int] = None, schemaFingerprint: Option[Long] = None): SchemaNotFound =
+    apply(Right((name, version, schemaFingerprint)))
+}
+
+final case class SchemaDeserializationError(message: String)
+    extends SchemaRegistryError(show"Schema deserialization failed with message: $message")
+final case class UnknownError(httpStatus: StatusCode, message: String)
+    extends SchemaRegistryError(show"Unknown error code=$httpStatus, message=$message}")
