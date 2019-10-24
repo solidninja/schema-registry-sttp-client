@@ -4,8 +4,9 @@ object Dependencies {
 
   object Versions {
     val avro = "1.9.1"
-    val circe = "0.12.2"
-    val sttp = "1.7.1"
+    val circe = "0.12.3"
+    val circeGenericExtras = "0.12.2" // TODO - seems it wasn't published with new version
+    val sttp = "1.7.2"
     val scalatest = "3.0.8"
   }
 
@@ -15,7 +16,7 @@ object Dependencies {
 
   val circe = Seq(
     "io.circe" %% "circe-generic" % Versions.circe,
-    "io.circe" %% "circe-generic-extras" % Versions.circe,
+    "io.circe" %% "circe-generic-extras" % Versions.circeGenericExtras,
     "io.circe" %% "circe-jawn" % Versions.circe,
     "io.circe" %% "circe-literal" % Versions.circe
   )
