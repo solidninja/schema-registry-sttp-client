@@ -6,9 +6,10 @@ package client
 import io.circe.literal._
 import io.circe.syntax._
 import org.apache.avro.{Schema => AvroSchema}
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class SchemaRegistryCodecTest extends FreeSpec with Matchers {
+class SchemaRegistryCodecTest extends AnyFreeSpec with Matchers {
   import SchemaRegistryCodec._
 
   "An Avro schema should be parsed from JSON" in {
