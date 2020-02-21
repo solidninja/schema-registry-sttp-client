@@ -7,7 +7,7 @@ object Dependencies {
     val circe = "0.12.3"
     val circeGenericExtras = "0.12.2" // TODO - seems it wasn't published with new version
     val sttp = "1.7.2"
-    val scalatest = "3.0.8"
+    val scalatest = "3.1.1"
   }
 
   val avro = Seq(
