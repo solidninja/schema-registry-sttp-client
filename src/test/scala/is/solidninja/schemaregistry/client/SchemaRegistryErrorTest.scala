@@ -1,9 +1,10 @@
 package is.solidninja.schemaregistry.client
 
-import org.scalatest.{FreeSpec, Matchers}
 import org.apache.avro.SchemaBuilder
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class SchemaRegistryErrorTest extends FreeSpec with Matchers {
+class SchemaRegistryErrorTest extends AnyFreeSpec with Matchers {
 
   val sampleSchema = SchemaBuilder
     .record("Test")
