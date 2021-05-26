@@ -4,7 +4,7 @@ object Dependencies {
 
   object Versions {
     val avro = "1.9.1"
-    val circe = "0.12.3"
+    val circe = "0.14.1"
     val circeGenericExtras = "0.12.2" // TODO - seems it wasn't published with new version
     val sttp = "1.7.2"
     val scalatest = "3.0.8"
