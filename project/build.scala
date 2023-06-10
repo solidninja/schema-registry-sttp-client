@@ -45,7 +45,7 @@ object build {
     organization := "is.solidninja.schemaregistry",
     version := "0.1.4-SNAPSHOT",
     scalaVersion := "2.13.1",
-    crossScalaVersions := Seq("2.12.10", "2.13.1"),
+    crossScalaVersions := Seq("2.12.18", "2.13.1"),
     javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
     manifestSetting,
     crossVersion := CrossVersion.binary
